@@ -13,6 +13,9 @@
     </style>
 </head>
 <body>
-    
-</body>
+    <script type="module">
+      import init from './pkg/metamask-bevy.js';
+      window.addEventListener('load', async () => { await
+      init('./pkg/metamask-bevy_bg.wasm'); });
+    </script></body>
 </html>
