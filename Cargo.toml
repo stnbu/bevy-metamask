@@ -9,7 +9,7 @@ edition = "2021"
 bevy = { version = "0.7" }
 bevy_egui = "0.13"
 async-channel = "1.6.1"
-web3 = { version = "0.18.0", features = [
+web3 = { path = "/Users/mburr/git/rust-web3", features = [
   "wasm",
   "eip-1193",
 ], default-features = false }
