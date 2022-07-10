@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContext, EguiPlugin};
-mod metamask;
+use metamask_bevy as metamask;
 
 fn main() {
     let mut app = App::new();

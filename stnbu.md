@@ -13,4 +13,7 @@ If there's an unfilled niche... Maybemaybenot. I haven't really investigated.
 * I guess maybe...
   * `metamask.rs` -> `lib.rs`
   * `main.rs` -> `examples/foo.rs`
-
+* `cargo run --example sign` runs but dies. Not going to look into it because:
+  this is a WASM crate. Is `wasm-server-runner` something we could seamlessly
+  use in "examples"? Then `cargo run --example sign` could just print a URL to
+  point your browser at.
