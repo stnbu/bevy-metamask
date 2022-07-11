@@ -23,7 +23,6 @@ fn ui_example(
 ) {
     egui::CentralPanel::default().show(egui_context.ctx_mut(), |ui| {
         let addr_tx = metamask_ch.addr_tx.clone();
-        let sign_tx = metamask_ch.sign_tx.clone();
 
         if !app_data.no_metamask {
             if ui.button("metamask").clicked() {
@@ -35,16 +34,6 @@ fn ui_example(
             if let Some(addr) = &app_data.user_wallet_addr {
                 let addr = addr.clone();
                 ui.label(addr.to_string());
-                if ui.button("Sign a text").clicked() {
-                    app_state.set(metamask::AppState::LoadingSign).unwrap();
-                    wasm_bindgen_futures::spawn_local(async move {
-                        metamask::sign_a_string(&sign_tx, &addr).await;
-                    })
-                }
-            }
-
-            if let Some(signed) = &app_data.signed {
-                ui.label(signed);
             }
         } else {
             ui.label("no metamask");
