@@ -26,6 +26,8 @@ impl Plugin for MetaMaskPlugin {
 }
 
 pub struct MetamaskChannel {
+    // Um, we want this structure...but where
+    //web3: Option<web3::Web3<eip_1193::Eip1193>>,
     addr_rx: Receiver<H160>,
     pub addr_tx: Sender<H160>,
 }
