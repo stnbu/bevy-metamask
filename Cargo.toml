@@ -14,4 +14,6 @@ web3 = { path = "/Users/mburr/git/rust-web3", features = [
   "eip-1193",
 ], default-features = false }
 wasm-bindgen-futures = "0.4.30"
-web-sys = { version = "0.3.57", features = ["Window"]}
+web-sys = { version = "0.3.57", features = ["Window", "console"]} # ditch 'console' feature?
+serde_json = "1.0.39"  # version bump? copied from rust-web3@main
+wasm-bindgen = "0.2.81" # don't need...?

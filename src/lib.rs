@@ -4,6 +4,9 @@ use bevy::tasks::IoTaskPool;
 use web3::transports::eip_1193;
 use web3::types::H160;
 
+#[macro_use]
+mod console;
+
 pub struct MetaMaskPlugin;
 impl Plugin for MetaMaskPlugin {
     fn build(&self, app: &mut App) {
@@ -54,16 +57,45 @@ fn setup_comm(mut commands: Commands) {
     }
 }
 
+// web_sys::console::log_1(&"Hello, world!".into());
+
 pub async fn request_account(addr_tx: &Sender<H160>) {
     let provider = eip_1193::Provider::default().unwrap().unwrap();
     let transport = eip_1193::Eip1193::new(provider);
-    let web3 = web3::Web3::new(transport);
+    //let web3 = web3::Web3::new(transport);
 
-    let addrs = web3.eth().request_accounts().await.unwrap();
+    // serde_json::value::Value
+    // transport.execute("eth_requestAccounts", vec![]) ???
+    //let addrs = web3.eth().request_accounts().await.unwrap();
+    use web3::Transport;
+    let addrs = transport
+        .execute("eth_requestAccounts", vec![])
+        .await
+        .unwrap();
 
-    if !addrs.is_empty() {
-        addr_tx.send(addrs[0]).await.unwrap();
+    match addrs {
+        serde_json::value::Value::Array(x) => {
+            console::console_log!("addrs: {:?}", x);
+            //let a = x.as_array().unwrap();
+
+            //let aagh = format!("{:?}", x);
+            //web_sys::console::log_1(aagh);
+
+            // let foo: String = format!("{:?}", x).to_string();
+            // let bar = foo.to_owned();
+            // web_sys::console::log_1(bar.into());
+        }
+        _ => {
+            // let wat = &"Hello, world2!".into();
+            // web_sys::console::log_1(wat);
+            // debug!("Oops was: {:?}", addrs)
+        }
     }
+    //Vec<Address>
+    addr_tx.send(web3::types::Address::default()).await.unwrap();
+    // if !addrs.is_empty() {
+    //     addr_tx.send(addrs[0]).await.unwrap();
+    // }
 }
 
 fn addr_response_system(
