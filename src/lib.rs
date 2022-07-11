@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use async_channel::{bounded, Receiver, Sender};
 use bevy::prelude::*;
 use bevy::tasks::IoTaskPool;
@@ -11,6 +9,13 @@ impl Plugin for MetaMaskPlugin {
     fn build(&self, app: &mut App) {
         // Belongs here, probably. Compiles, definitely.
         let _task_pool = app.world.resource::<IoTaskPool>().0.clone();
+
+        /*
+        let (ws_tx, ws_rx) = crossbeam_channel::unbounded();
+        app.insert_resource(WsListener::new(task_pool, ws_tx))
+            .insert_resource(WsAcceptQueue { ws_rx })
+            .add_system(accept_ws_from_queue.system());
+                */
 
         app.add_startup_system(setup_comm)
             .add_state(AppState::Ready)
@@ -34,7 +39,6 @@ pub enum AppState {
 #[derive(Default)]
 pub struct AppData {
     pub user_wallet_addr: Option<H160>,
-    pub no_metamask: bool,
 }
 
 fn setup_comm(mut commands: Commands) {
@@ -42,13 +46,9 @@ fn setup_comm(mut commands: Commands) {
     commands.insert_resource(MetamaskChannel { addr_rx, addr_tx });
 
     let provider = eip_1193::Provider::default().unwrap();
-    if let Some(_) = provider {
+    if let Some(_p) = provider {
+        debug!("{:?}", _p);
         commands.insert_resource(AppData::default());
-    } else {
-        commands.insert_resource(AppData {
-            no_metamask: true,
-            ..AppData::default()
-        });
     }
 }
 
@@ -69,11 +69,8 @@ fn addr_response_system(
     mut app_data: ResMut<AppData>,
     mut app_state: ResMut<State<AppState>>,
 ) {
-    match metamask_ch.addr_rx.try_recv() {
-        Ok(addr) => {
-            app_data.user_wallet_addr = Some(addr);
-            app_state.set(AppState::Ready).unwrap();
-        }
-        Err(e) => info!("{}", e),
+    if let Ok(addr) = metamask_ch.addr_rx.try_recv() {
+        app_data.user_wallet_addr = Some(addr);
+        app_state.set(AppState::Ready).unwrap();
     }
 }

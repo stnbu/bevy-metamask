@@ -24,19 +24,15 @@ fn ui_example(
     egui::CentralPanel::default().show(egui_context.ctx_mut(), |ui| {
         let addr_tx = metamask_ch.addr_tx.clone();
 
-        if !app_data.no_metamask {
-            if ui.button("metamask").clicked() {
-                app_state.set(metamask::AppState::LoadingAddr).unwrap();
-                wasm_bindgen_futures::spawn_local(async move {
-                    metamask::request_account(&addr_tx).await;
-                });
-            }
-            if let Some(addr) = &app_data.user_wallet_addr {
-                let addr = addr.clone();
-                ui.label(addr.to_string());
-            }
-        } else {
-            ui.label("no metamask");
+        if ui.button("metamask").clicked() {
+            app_state.set(metamask::AppState::LoadingAddr).unwrap();
+            wasm_bindgen_futures::spawn_local(async move {
+                metamask::request_account(&addr_tx).await;
+            });
+        }
+        if let Some(addr) = &app_data.user_wallet_addr {
+            let addr = addr.clone();
+            ui.label(addr.to_string());
         }
     });
 }
