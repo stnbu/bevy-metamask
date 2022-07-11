@@ -2,12 +2,16 @@ use std::sync::Arc;
 
 use async_channel::{bounded, Receiver, Sender};
 use bevy::prelude::*;
+use bevy::tasks::IoTaskPool;
 use web3::transports::eip_1193;
 use web3::types::H160;
 
 pub struct MetaMaskPlugin;
 impl Plugin for MetaMaskPlugin {
     fn build(&self, app: &mut App) {
+        // Belongs here, probably. Compiles, definitely.
+        let _task_pool = app.world.resource::<IoTaskPool>().0.clone();
+
         app.add_startup_system(setup_comm)
             .add_state(AppState::Ready)
             .add_system_set(
