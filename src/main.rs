@@ -10,29 +10,34 @@ fn main() {
 
     app.add_plugins(DefaultPlugins)
         .add_plugin(EguiPlugin)
-        .add_plugin(metamask::MetaMaskPlugin)
+        .add_startup_system(startup)
+        .add_plugin(metamask::task::Eip1193Plugin)
         .add_system(ui_example)
         .run();
 }
 
+fn startup(task: Res<metamask::task::Eip1193Task>) {
+    task.spawn();
+}
+
 fn ui_example(
     mut egui_context: ResMut<EguiContext>,
-    metamask_ch: ResMut<metamask::MetamaskChannel>,
-    app_data: Res<metamask::AppData>,
-    mut app_state: ResMut<State<metamask::AppState>>,
+    mut interface: ResMut<metamask::task::Eip1193Interface>,
 ) {
     egui::CentralPanel::default().show(egui_context.ctx_mut(), |ui| {
-        let addr_tx = metamask_ch.addr_tx.clone();
+        // self.sender.try_send(message).is_ok()
+        // self.receiver.try_recv()
 
+        let sender = interface.sender.clone();
+        let receiver = interface.receiver.clone();
         if ui.button("metamask").clicked() {
-            app_state.set(metamask::AppState::LoadingAddr).unwrap();
             wasm_bindgen_futures::spawn_local(async move {
-                metamask::request_account(&addr_tx).await;
+                let _ = sender.try_send("eth_requestAccounts".to_string()).is_ok();
             });
         }
-        if let Some(addr) = &app_data.user_wallet_addr {
-            let addr = addr.clone();
-            ui.label(addr.to_string());
+        if let Ok(message) = receiver.try_recv() {
+            let message = message.clone();
+            ui.label(message.to_string());
         }
     });
 }

@@ -7,7 +7,7 @@ use web3::types::H160;
 #[macro_use]
 mod console;
 
-mod task;
+pub mod task;
 
 pub struct MetaMaskPlugin;
 impl Plugin for MetaMaskPlugin {

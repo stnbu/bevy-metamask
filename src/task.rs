@@ -16,6 +16,7 @@ impl Plugin for Eip1193Plugin {
     }
 }
 
+//#[derive(Copy)]
 pub struct Eip1193Task {
     task_pool: IoTaskPool,
     sender: Sender<String>,
@@ -23,22 +24,14 @@ pub struct Eip1193Task {
 }
 
 pub struct Eip1193Interface {
-    sender: Sender<String>,
-    receiver: Receiver<String>,
+    pub sender: Sender<String>,
+    pub receiver: Receiver<String>,
 }
 
 pub use async_channel::TryRecvError as ReceiveError;
 impl Eip1193Interface {
     pub fn new(sender: Sender<String>, receiver: Receiver<String>) -> Self {
         Self { sender, receiver }
-    }
-
-    pub fn send(&self, message: String) -> bool {
-        self.sender.try_send(message).is_ok()
-    }
-
-    pub fn receive(&self) -> Result<String, ReceiveError> {
-        self.receiver.try_recv()
     }
 }
 
@@ -51,15 +44,19 @@ impl Eip1193Task {
         }
     }
 
-    pub fn spawn(self) {
+    pub fn spawn(&self) {
         let provider = eip_1193::Provider::default().unwrap().unwrap();
         use web3::Transport;
         let transport = eip_1193::Eip1193::new(provider);
 
-        let task = self.task_pool.spawn(async move {
-            if let Ok(message) = self.receiver.try_recv() {
+        let task_pool = self.task_pool.clone();
+        let receiver = self.receiver.clone();
+        let sender = self.sender.clone();
+
+        let task = task_pool.spawn(async move {
+            if let Ok(message) = receiver.try_recv() {
                 if let Ok(message) = transport.execute(&message, vec![]).await {
-                    self.sender.try_send(message.to_string());
+                    sender.try_send(message.to_string()).unwrap();
                 }
             }
         });
