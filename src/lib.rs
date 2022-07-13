@@ -1,6 +1,5 @@
 use async_channel::{bounded, Receiver, Sender};
 use bevy::prelude::*;
-use bevy::tasks::IoTaskPool;
 use web3::transports::eip_1193;
 use web3::types::H160;
 
@@ -12,17 +11,8 @@ mod task;
 pub struct MetaMaskPlugin;
 impl Plugin for MetaMaskPlugin {
     fn build(&self, app: &mut App) {
-        // Belongs here, probably. Compiles, definitely.
-        let _task_pool = app.world.resource::<IoTaskPool>().0.clone();
-
-        /*
-        let (ws_tx, ws_rx) = crossbeam_channel::unbounded();
-        app.insert_resource(WsListener::new(task_pool, ws_tx))
-            .insert_resource(WsAcceptQueue { ws_rx })
-            .add_system(accept_ws_from_queue.system());
-                */
-
         app.add_startup_system(setup_comm)
+            .add_plugin(task::Eip1193Plugin)
             .add_state(AppState::Ready)
             .add_system_set(
                 SystemSet::on_update(AppState::LoadingAddr).with_system(addr_response_system),
