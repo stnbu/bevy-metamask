@@ -7,6 +7,8 @@ use web3::types::H160;
 #[macro_use]
 mod console;
 
+mod listener;
+
 pub struct MetaMaskPlugin;
 impl Plugin for MetaMaskPlugin {
     fn build(&self, app: &mut App) {
