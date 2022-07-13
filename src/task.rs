@@ -1,6 +1,7 @@
 use async_channel::{unbounded, Receiver, Sender};
 use bevy::prelude::*;
 use bevy::tasks::{IoTaskPool, Task};
+use web3::transports::eip_1193;
 
 pub struct Eip1193Plugin;
 impl Plugin for Eip1193Plugin {
@@ -35,9 +36,20 @@ impl Eip1193Listener {
 
         let task_pool = self.task_pool.clone();
         let eip1193_tx = self.eip1193_tx.clone();
+
+        let provider = eip_1193::Provider::default().unwrap().unwrap();
+        let transport = eip_1193::Eip1193::new(provider);
+
+        // let addrs = transport
+        //     .execute("eth_requestAccounts", vec![])
+        //     .await
+        //     .unwrap();
+
         let task = self.task_pool.spawn(async move {
+            // we have a transport. the only thing to do is relay along the
+            // responses to Eip1193AcceptQueue ....??
             loop {
-                format!("{:?}{:?}", task_pool, eip1193_tx);
+                format!("{:?}{:?}{:?}", task_pool, eip1193_tx, transport);
                 /////
             }
         });
