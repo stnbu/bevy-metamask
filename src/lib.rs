@@ -13,10 +13,10 @@ pub struct MetaMaskPlugin;
 impl Plugin for MetaMaskPlugin {
     fn build(&self, app: &mut App) {
         let task_pool = IoTaskPool(app.world.resource::<IoTaskPool>().0.clone());
-        let (eip1193_tx, eip1193_rx) = bounded(1);
+        //let (eip1193_tx, eip1193_rx) = bounded(1);
         app.add_startup_system(setup_comm)
-            .insert_resource(task::Eip1193Listener::new(task_pool, eip1193_tx))
-            .insert_resource(task::Eip1193AcceptQueue::new(eip1193_rx))
+            // .insert_resource(task::Eip1193Listener::new(task_pool, eip1193_tx))
+            // .insert_resource(task::Eip1193AcceptQueue::new(eip1193_rx))
             .add_state(AppState::Ready)
             .add_system_set(
                 SystemSet::on_update(AppState::LoadingAddr).with_system(addr_response_system),
