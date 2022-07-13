@@ -24,6 +24,25 @@ impl Eip1193Listener {
             eip1193_tx,
         }
     }
+
+    ////////
+
+    pub fn _dodo(&self) {
+        // let listener = futures::executor::block_on(TcpListener::bind(bind_to))
+        //     .expect("cannot bind to the address");
+
+        // the transport = ...
+
+        let task_pool = self.task_pool.clone();
+        let eip1193_tx = self.eip1193_tx.clone();
+        let task = self.task_pool.spawn(async move {
+            loop {
+                format!("{:?}{:?}", task_pool, eip1193_tx);
+                /////
+            }
+        });
+        task.detach();
+    }
 }
 
 pub struct Eip1193AcceptQueue {
