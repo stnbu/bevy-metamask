@@ -17,15 +17,21 @@ pub struct Eip1193Listener {
     eip1193_tx: Sender<serde_json::value::Value>,
 }
 
-pub struct Eip1193AcceptQueue {
-    eip1193_rx: Receiver<serde_json::value::Value>,
-}
-
 impl Eip1193Listener {
     pub fn new(task_pool: IoTaskPool, eip1193_tx: Sender<serde_json::value::Value>) -> Self {
         Self {
             task_pool,
             eip1193_tx,
         }
+    }
+}
+
+pub struct Eip1193AcceptQueue {
+    eip1193_rx: Receiver<serde_json::value::Value>,
+}
+
+impl Eip1193AcceptQueue {
+    pub fn new(eip1193_rx: Receiver<serde_json::value::Value>) -> Self {
+        Self { eip1193_rx }
     }
 }
