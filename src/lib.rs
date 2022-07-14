@@ -4,8 +4,8 @@ use bevy::tasks::IoTaskPool;
 use web3::transports::eip_1193;
 use web3::types::H160;
 
-#[macro_use]
-mod console;
+//#[macro_use]
+//pub mod console;
 
 pub mod task;
 
@@ -66,8 +66,8 @@ pub async fn request_account(addr_tx: &Sender<H160>) {
         .unwrap();
 
     match addrs {
-        serde_json::value::Value::Array(x) => {
-            console::console_log!("addrs: {:?}", x);
+        serde_json::value::Value::Array(_) => {
+            //console::console_log!("addrs: {:?}", x);
             //let a = x.as_array().unwrap();
 
             //let aagh = format!("{:?}", x);

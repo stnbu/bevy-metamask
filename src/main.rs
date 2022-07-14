@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContext, EguiPlugin};
+#[macro_use]
+use mbutils;
 use metamask_bevy as metamask;
 
 fn main() {
@@ -31,11 +33,14 @@ fn ui_example(
         let sender = interface.sender.clone();
         let receiver = interface.receiver.clone();
         if ui.button("metamask").clicked() {
+            mbutils::console_log!("foo2");
             wasm_bindgen_futures::spawn_local(async move {
                 let _ = sender.try_send("eth_requestAccounts".to_string()).is_ok();
             });
         }
         if let Ok(message) = receiver.try_recv() {
+            //metamask_bevy::console::console_log!("foo");
+            mbutils::console_log!("foo");
             let message = message.clone();
             ui.label(message.to_string());
         }
