@@ -1,6 +1,8 @@
 use async_channel::{unbounded, Receiver, Sender};
 use bevy::prelude::*;
 use bevy::tasks::{IoTaskPool, Task};
+#[macro_use]
+use mbutils;
 //use futures::select;
 //use web3::transports::eip_1193;
 use web3::transports::eip_1193;
@@ -54,11 +56,32 @@ impl Eip1193Task {
         let sender = self.sender.clone();
 
         let task = task_pool.spawn(async move {
-            if let Ok(message) = receiver.try_recv() {
-                if let Ok(message) = transport.execute(&message, vec![]).await {
-                    sender.try_send(message.to_string()).unwrap();
+            match receiver.try_recv() {
+                Ok(message) => match transport.execute(&message, vec![]).await {
+                    Ok(response) => {
+                        match sender.try_send(response.to_string()) {
+                            Ok(()) => {
+                                mbutils::console_log!("Successfully sent message.")
+                            }
+                            Err(err) => {
+                                mbutils::console_log!("Failed to send message: {}", err)
+                            }
+                        };
+                    }
+                    Err(err) => {
+                        mbutils::console_log!("Failed execute web3 call: {}", err)
+                    }
+                },
+                Err(err) => {
+                    mbutils::console_log!("Failed to receive web3 api call: {}", err)
                 }
             }
+
+            // if let Ok(message) = receiver.try_recv() {
+            //     if let Ok(message) = transport.execute(&message, vec![]).await {
+            //         sender.try_send(message.to_string()).unwrap();
+            //     }
+            // }
         });
         task.detach();
     }

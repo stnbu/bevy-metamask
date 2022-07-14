@@ -27,22 +27,31 @@ fn ui_example(
     mut interface: ResMut<metamask::task::Eip1193Interface>,
 ) {
     egui::CentralPanel::default().show(egui_context.ctx_mut(), |ui| {
-        // self.sender.try_send(message).is_ok()
-        // self.receiver.try_recv()
-
         let sender = interface.sender.clone();
         let receiver = interface.receiver.clone();
         if ui.button("metamask").clicked() {
             mbutils::console_log!("foo2");
             wasm_bindgen_futures::spawn_local(async move {
-                let _ = sender.try_send("eth_requestAccounts".to_string()).is_ok();
+                mbutils::console_log!("about to send");
+                match sender.try_send("eth_requestAccounts".to_string()) {
+                    Ok(()) => {
+                        mbutils::console_log!("xxx yay, sent");
+                    }
+                    Err(err) => {
+                        mbutils::console_log!("xxx boo, not sent: {:?}", err);
+                    }
+                };
             });
         }
-        if let Ok(message) = receiver.try_recv() {
-            //metamask_bevy::console::console_log!("foo");
-            mbutils::console_log!("foo");
-            let message = message.clone();
-            ui.label(message.to_string());
+        match receiver.try_recv() {
+            Ok(message) => {
+                mbutils::console_log!("xxxx yay, received");
+                let message = message.clone();
+                ui.label(message.to_string());
+            }
+            Err(err) => {
+                mbutils::console_log!("xxxx boo, not received: {:?}", err);
+            }
         }
     });
 }
