@@ -1,6 +1,6 @@
 #!/bin/sh -ue
 
-cargo build --release --target wasm32-unknown-unknown
+cargo build -q --release --target wasm32-unknown-unknown
 
 wasm-bindgen --out-dir pkg --target web --reference-types --no-typescript --omit-default-module-path \
 	     target/wasm32-unknown-unknown/release/metamask-bevy.wasm
