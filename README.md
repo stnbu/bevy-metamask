@@ -1,7 +1,9 @@
-# Bevy - Metamask
 
-Using Bevy and rust-web3, both on wasm, to get the user wallet address and sign a text.
+1. Get your tooling all set up (at least `rustup target add wasm32-unknown-unknown`)
+1. Run ./release.sh
 
-# Demo
+You can just serve this directory and load index.html in a browser.
 
-https://charming-pavlova-b7e75c.netlify.app/
+In the browser console, you'll see messages from `main.rs` but not from `task.rs`.
+
+What up with that?
