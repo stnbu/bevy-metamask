@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContext, EguiPlugin};
-#[macro_use]
 use mbutils;
 use metamask_bevy as metamask;
 
@@ -24,33 +23,32 @@ fn startup(task: Res<metamask::task::Eip1193Task>) {
 
 fn ui_example(
     mut egui_context: ResMut<EguiContext>,
-    mut interface: ResMut<metamask::task::Eip1193Interface>,
+    interface: Res<metamask::task::Eip1193Interface>,
 ) {
     egui::CentralPanel::default().show(egui_context.ctx_mut(), |ui| {
         let sender = interface.sender.clone();
         let receiver = interface.receiver.clone();
         if ui.button("metamask").clicked() {
-            mbutils::console_log!("foo2");
+            mbutils::console_log!("Button was clicked.");
             wasm_bindgen_futures::spawn_local(async move {
-                mbutils::console_log!("about to send");
                 match sender.try_send("eth_requestAccounts".to_string()) {
                     Ok(()) => {
-                        mbutils::console_log!("xxx yay, sent");
+                        mbutils::console_log!("Sent to interface sender.");
                     }
                     Err(err) => {
-                        mbutils::console_log!("xxx boo, not sent: {:?}", err);
+                        mbutils::console_log!("Not sent to interface sender: {}", err);
                     }
                 };
             });
         }
         match receiver.try_recv() {
             Ok(message) => {
-                mbutils::console_log!("xxxx yay, received");
                 let message = message.clone();
-                ui.label(message.to_string());
+                mbutils::console_log!("A message received from interface: {}", message.to_string());
+                //ui.label(message.to_string());
             }
             Err(err) => {
-                mbutils::console_log!("xxxx boo, not received: {:?}", err);
+                mbutils::console_log!("Failed to receive from interface: {}", err);
             }
         }
     });

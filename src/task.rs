@@ -1,7 +1,6 @@
 use async_channel::{unbounded, Receiver, Sender};
 use bevy::prelude::*;
 use bevy::tasks::{IoTaskPool, Task};
-#[macro_use]
 use mbutils;
 //use futures::select;
 //use web3::transports::eip_1193;
